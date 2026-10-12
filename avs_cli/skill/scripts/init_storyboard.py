@@ -8,9 +8,12 @@
 
 会读取文章的标题结构作为候选镜头主题，按钩子短、中段平均、收尾略长的规则分配时间轴，
 生成一个带占位符的骨架文件。占位符一律写成 TODO，提醒逐个填实，不要批量生成糊弄。
+
+镜头数默认按时长反推（单镜不超过 8 秒，落在 6 到 9 个之间），也可以 --shots 指定。
 """
 
 import argparse
+import math
 import re
 import sys
 from pathlib import Path
@@ -59,7 +62,15 @@ def allocate(n, duration):
         cursor = end
     spans.append((cursor, cursor + tail))
     return spans
-    return spans
+
+
+def shot_count(duration):
+    """按单镜不超过 8 秒反推需要几个镜头，落在 6 到 9 之间。
+
+    先定镜头数再切时间，比先定镜头数再发现装不下要合理。
+    """
+    need = int(math.ceil(duration / float(MAX_SHOT)))
+    return max(6, min(9, need))
 
 
 def main():
@@ -81,7 +92,7 @@ def main():
     if args.shots:
         n = args.shots
     else:
-        n = max(6, min(9, round(args.duration / 8)))
+        n = shot_count(args.duration)
     spans = allocate(n, args.duration)
 
     title_hint = topics[0] if topics else path.stem

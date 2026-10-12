@@ -1,16 +1,16 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "article-to-video-shots"
-version = "1.2.0"
-description = "长文转短视频分镜：把公众号推文、博客、测评稿拆成带时间轴的分镜脚本，含中英文提示词、口播配音、字幕与体检工具"
+version = "1.2.1"
+description = "把长文拆成可直接投喂文生视频模型的分镜脚本，一键接入 WorkBuddy / Claude Code / Cursor 等 Agent"
 readme = "README.md"
-license = { text = "MIT" }
 requires-python = ">=3.9"
-authors = [{ name = "lijinhongucl-pixel" }]
-keywords = ["ai", "video", "ai-video", "storyboard", "prompt", "text-to-video", "agent-skill"]
+license = { text = "MIT" }
+authors = [{ name = "社交名流UCL" }]
+keywords = ["ai", "video", "storyboard", "prompt", "skill", "agent", "claude-code", "cursor"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -21,10 +21,14 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: Markdown",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
 [project.urls]
 Homepage = "https://github.com/lijinhongucl-pixel/article-to-video-shots"
 Repository = "https://github.com/lijinhongucl-pixel/article-to-video-shots"
 Changelog = "https://github.com/lijinhongucl-pixel/article-to-video-shots/blob/main/CHANGELOG.md"
+Issues = "https://github.com/lijinhongucl-pixel/article-to-video-shots/issues"
 
 [project.scripts]
 avs = "avs_cli.cli:main"
@@ -35,6 +39,7 @@ packages = ["avs_cli"]
 [tool.setuptools.package-data]
 avs_cli = [
     "adapters.json",
+    "skill/**/*",
     "skill/SKILL.md",
     "skill/scripts/*.py",
     "skill/references/*.md",

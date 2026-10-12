@@ -7,15 +7,19 @@ on:
     branches: [main]
 
 jobs:
-  quality:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.9", "3.11", "3.13"]
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: 设置 Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -25,7 +29,7 @@ jobs:
       - name: 安装 CLI
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e .
+          python -m pip install .
 
       - name: 检查命令可用
         run: |
@@ -34,15 +38,33 @@ jobs:
 
       - name: 端到端回归
         run: |
-          mkdir -p /tmp/e2e && cd /tmp/e2e
+          cd "$RUNNER_TEMP" && mkdir -p e2e && cd e2e
           printf '# 标题\n\n图片來自測試。\n\n## 一节\n\n内容一。\n\n## 二节\n\n内容二。\n' > art.md
-          avs install --dir /tmp/e2e/target
-          test -f /tmp/e2e/target/article-to-video-shots/SKILL.md
-          python /tmp/e2e/target/article-to-video-shots/scripts/init_storyboard.py art.md --duration 45 --out sb.md
-          python /tmp/e2e/target/article-to-video-shots/scripts/check_storyboard.py sb.md --strict > /dev/null || true
-          python /tmp/e2e/target/article-to-video-shots/scripts/check_storyboard.py sb.md | grep -q "E9" && echo "占位符检查正常"
+          avs install --dir ./target
+          test -f ./target/article-to-video-shots/SKILL.md
+          test -f ./target/article-to-video-shots/scripts/check_storyboard.py
+          avs init art.md --duration 45 --out sb.md
+          test -f sb.md
+          # 骨架全是 TODO，体检必须报 E9，否则说明检查失效
+          avs check sb.md | grep -q "E9"
+          echo "端到端通过"
 
-      - name: 卸载验证
+      - name: 镜头数按时长反推
         run: |
-          avs uninstall --agent cursor
-          echo ok
+          cd "$RUNNER_TEMP"/e2e
+          avs init art.md --duration 50 --out sb50.md
+          # 50 秒需要 7 个镜头（单镜上限 8 秒）
+          grep -c "^## 镜头" sb50.md | grep -q "^7$"
+          echo "镜头数反推通过"
+
+      - name: 安全保护
+        run: |
+          cd "$RUNNER_TEMP"/e2e
+          mkdir -p guard/article-to-video-shots
+          echo "important" > guard/article-to-video-shots/my_notes.txt
+          # 目标目录有无关内容时必须拒绝，且不删用户文件
+          if avs install --dir ./guard >/dev/null 2>&1; then
+            echo "安全保护失效：不该安装成功" && exit 1
+          fi
+          test -f guard/article-to-video-shots/my_notes.txt
+          echo "安全保护通过"

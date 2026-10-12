@@ -1,45 +1,64 @@
 # 更新日志
 
-本项目所有值得记录的改动都写在这里，格式参考 Keep a Changelog。
+本文件记录每个版本值得关注的改动，格式参考 Keep a Changelog。
 
-## 1.2.0
+## [1.2.1]
 
-**新增跨平台一键安装 CLI**
+### 新增
 
-- 新增 `avs` 命令行工具，零依赖，Python 3.9 起可用
-- `avs install` 自动探测本机已装的 Agent，把技能装进各自的 skills 目录
-- 支持 WorkBuddy、Claude Code、Cursor、CodeBuddy、OpenCode、Gemini CLI、Codex CLI、Trae
-- 支持安装到用户全局或当前项目两种模式，支持 `--dir` 手动指定路径兜底
-- `avs list` 查看Agent 与安装状态，`avs doctor` 体检安装结果，`avs uninstall` 卸载
-- `avs init` / `avs check` / `avs learn` 直接转发到对应脚本，装完即可用，不必记脚本路径
-- 支持 `--source` 从本地目录安装、`--url` 从远程压缩包安装
+- `install.sh` 一键安装脚本，支持 `curl | bash`
+- `CONTRIBUTING.md`，重点说明怎么新增一个 Agent 适配器
+- GitHub Actions CI，覆盖 2 个操作系统 × 3 个 Python 版本，含安全保护回归测试
+- README 补完整使用教程，明确四种安装方式的差异
+- SKILL.md 增加「关于 avs 命令」章节，说明命令转发与安装路径无关性
 
-**项目结构改为标准开源布局**
+### 修复
 
-- 技能本体移到 `avs_cli/skill/`，便于随 pip 包分发
-- 新增 LICENSE、CHANGELOG、.gitignore、pyproject.toml
-- 新增 GitHub Actions CI，自动做语法检查、安装自检、分镜体检回归
-- 可以通过 `pip install -e .` 安装并获得 `avs` 命令
+- 镜头数改为按时长反推。之前要 50 秒只会生成 6 个镜头共 41 秒，现在是 7 个镜头 49 秒
+- `init_storyboard.py` 里有一行重复的 `return spans`
+- 安装全部失败时退出码仍是 0，脚本无法判断成败，现在返回 1
+- `avs list --all` 里未检测到 Agent 的平台会错误显示项目级路径，现在显示用户级
 
-## 1.1.0
+## [1.2.0]
 
-**体检扩到九项硬伤**
+### 新增
 
-- 新增 E6 提示词缺全局风格前缀、E7 英文提示词混入中文、E8 命中历史禁用词、E9 字段仍为占位符
-- 新增五类提醒，包括单镜头超过 8 秒、配音量相对画面过空
+- **跨平台一键安装 CLI**（`avs` 命令），零依赖，Python 3.9 起可跑
+  - `avs install` 自动检测本机已装的 Agent 并安装
+  - `avs list` 查看支持哪些 Agent、本机装了哪些
+  - `avs doctor` 检查安装结果
+  - `avs uninstall` 卸载
+  - `avs init / check / learn` 转发到对应脚本，不用记路径
+- **六个 Agent 适配器**，路径配置集中在 `avs_cli/adapters.json`，新增平台只改配置不改代码
+  - verified：WorkBuddy、Claude Code
+  - community：Codex CLI、Cursor
+  - experimental：Gemini CLI、Trae
+- **三种安装方式**：pipx、一键脚本（`curl | bash`）、手动复制
+- **标准开源项目结构**：LICENSE、CHANGELOG、.gitignore、pyproject.toml、CI
+
+### 改进
+
+- 镜头数改为按时长反推（单镜不超过 8 秒），不再出现「给了 50 秒只生成 41 秒」的情况
+- 安装前检查目标目录，内容不相关时拒绝覆盖，避免误删用户文件
+- 安装全部失败时返回非 0 退出码，方便脚本判断
+- `avs list` 区分「未发现 Agent」和「Agent 在但没装技能」两种状态
+- 各 Agent 路径标注确认程度（verified / community / experimental），不确定的明确标注
+
+### 修复
+
+- 多级目录路径判断错误：像 `~/.config/codex/skills` 这种，之前会误判为不可用
+- `init_storyboard.py` 里有一行重复的 `return spans`
+
+## [1.1.0]
+
+### 新增
+
+- 体检项从 5 项扩到 9 项：E6 提示词缺风格前缀、E7 英文提示词混入中文、E8 命中历史禁用词、E9 TODO 未填
+- 五类提醒：金额百分比、提示词长度、字幕长度、单镜超时、配音过空
 - `check_storyboard.py` 支持多文件、`--strict`、`--json`，退出码符合 CI 约定
+- `learn.py` 经验沉淀机制，历史禁用词自动变成新检查项
+- `init_storyboard.py` 从长文生成带时间轴的骨架
 
-**新增自我进化机制**
+## [1.0.0]
 
-- 新增 `learn.py`，沉淀经验到 `~/.workbuddy/avs/learnings.jsonl` 与项目级 `.avs/learnings.jsonl`
-- 经验文件记过的画面禁用词会自动变成新的检查项，无需改代码
-- 同一条经验出现三次以上建议升级为 SKILL.md 的硬规则
-
-**新增脚手架**
-
-- 新增 `init_storyboard.py`，从长文读取小标题作为候选镜头主题并按规则切分时间轴
-- 单镜头不超过 8 秒，目标时长装不下时提示删内容而不是拉长镜头
-
-## 1.0.0
-
-首个版本，提供五要素分镜写作法与基础体检。
+首个版本。提供五要素分镜写作法与基础体检。

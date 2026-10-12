@@ -1,16 +1,21 @@
-# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
+.eggs/
 build/
 dist/
 .venv/
 venv/
+*.egg
 
-# 编辑器与系统
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
+*.swp
 
-# 项目级经验文件记得住也可自行纳入版本管理，默认忽略
+.pytest_cache/
+.coverage
+
+# 项目级经验文件，默认不入库；想共享团队经验的话可以去掉这一行
 .avs/

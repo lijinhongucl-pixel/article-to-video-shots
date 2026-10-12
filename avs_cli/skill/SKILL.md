@@ -1,7 +1,7 @@
 ---
 name: article-to-video-shots
 slug: article-to-video-shots
-version: 1.2.0
+version: 1.2.1
 displayName: 长文转短视频分镜 · AI 视频脚本生成器
 summary: 把公众号推文、博客、测评稿一键拆成带时间轴的分镜脚本，输出画面描述、中英文视频提示词、口播配音和字幕，自动体检时长语速与渲染风险，并把每次踩过的坑沉淀下来，下次自动拦住
 description: 当用户有一篇已写好的长文（公众号推文、博客、测评稿、教程、报告、小红书长帖、技术文档），想做成短视频时触发。产出带时间轴的镜头清单，每个镜头包含画面描述、中文提示词、英文提示词、配音文案、屏幕字幕五要素，可直接投喂可灵、即梦、Sora、Veo、Runway 等文生视频模型。内置九项硬伤体检，自动检查配音字数是否超出时长、画面是否误让模型渲染中文、提示词是否遗漏统一风格前缀、单镜头是否过长。自带经验沉淀机制，每次完成的教训会累积下来变为新检查项。适用于抖音、视频号、小红书、B站、YouTube Shorts 等竖版短视频场景。触发词包括「把这个做成视频」「写视频提示词」「出分镜」「做短视频脚本」「长文转视频」「」「AI 视频脚本」「口播稿」「分镜头」「storyboard」「text to video」。不用于纯图片海报生成，不用于已有时长精确的剪辑工程。
@@ -184,6 +184,20 @@ avs learn add --category 用户偏好 --text "配乐偏克制，不要情绪煽�
 | `scripts/storyboard_lib.py` | 解析与校验公共库 |
 | `references/shot-patterns.md` | 九种镜头类型的画面公式 |
 | `references/prompt-patterns.md` | 镜头语言中英对照词表 |
+
+## 关于 avs 命令
+
+这个技能还配了一个命令行工具 `avs`，用来把它装进各种 Agent。用户可能通过 `pipx install` 或一键脚本装过，也可能直接复制目录。
+
+- `avs install` 会把本技能复制进 WorkBuddy、Claude Code、Cursor、Codex CLI 等 Agent 的 skills 目录，自动检测本机装了哪些
+- `avs init / avs check / avs learn` 会转发到上面 `scripts/` 里的对应脚本，作用完全一样，只是不用记路径
+- 各平台的目录配置在同级的 `adapters.json`，新增平台只改配置
+
+**对本 skill 的影响**：无论用户怎么装，本文件（`SKILL.md`）和 `scripts/`、`references/` 的相对位置不变。所以上面所有命令里的相对路径写法始终成立，不需要关心自己被装到了哪里。
+
+如果用户说「装到 Cursor 里」或「给 Claude Code 也装一份」，告诉他运行 `avs install --agent cursor` 即可，不要手动复制目录。路径对不上时用 `avs install --dir <路径>` 兜底。
+
+## 交付与经验存放
 
 交付一个 Markdown 文件给用户，格式照上文第三步的五件套代码块组织即可。这个 skill 不附带成品示例文件，避免把某个具体项目的品牌和口吻带进每一次使用。
 
