@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# 编辑器与系统
+.DS_Store
+.idea/
+.vscode/
+
+# 项目级经验文件记得住也可自行纳入版本管理，默认忽略
+.avs/

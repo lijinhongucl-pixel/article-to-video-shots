@@ -1,0 +1,74 @@
+[
+  {
+    "id": "workbuddy",
+    "name": "WorkBuddy",
+    "detect": ["~/.workbuddy"],
+    "user": ["~/.workbuddy/skills"],
+    "project": [".workbuddy/skills"],
+    "status": "verified",
+    "note": "腾讯 WorkBuddy，官方文档确认的技能目录"
+  },
+  {
+    "id": "claude",
+    "name": "Claude Code",
+    "detect": ["~/.claude"],
+    "user": ["~/.claude/skills"],
+    "project": [".claude/skills"],
+    "status": "verified",
+    "note": "Anthropic Claude Code 官方 Agent Skills 目录"
+  },
+  {
+    "id": "cursor",
+    "name": "Cursor",
+    "detect": ["~/.cursor"],
+    "user": ["~/.cursor/skills"],
+    "project": [".cursor/skills"],
+    "status": "verified",
+    "note": "Cursor 1.7+ 起支持 Agent Skills"
+  },
+  {
+    "id": "codebuddy",
+    "name": "CodeBuddy",
+    "detect": ["~/.codebuddy"],
+    "user": ["~/.codebuddy/skills"],
+    "project": [".codebuddy/skills"],
+    "status": "community",
+    "note": "若版本不支持 skills 目录，改用 --dir 指定规则目录"
+  },
+  {
+    "id": "opencode",
+    "name": "OpenCode",
+    "detect": ["~/.opencode", "~/.config/opencode"],
+    "user": ["~/.config/opencode/skills", "~/.opencode/skills"],
+    "project": [".opencode/skills"],
+    "status": "community",
+    "note": "两个候选路径，取第一个已存在的父级"
+  },
+  {
+    "id": "gemini",
+    "name": "Gemini CLI",
+    "detect": ["~/.gemini"],
+    "user": ["~/.gemini/skills"],
+    "project": [".gemini/skills"],
+    "status": "experimental",
+    "note": "实验支持，不确定时用 --dir 手动指定"
+  },
+  {
+    "id": "codex",
+    "name": "Codex CLI",
+    "detect": ["~/.codex"],
+    "user": ["~/.codex/skills"],
+    "project": [".codex/skills"],
+    "status": "experimental",
+    "note": "实验支持，不确定时用 --dir 手动指定"
+  },
+  {
+    "id": "trae",
+    "name": "Trae",
+    "detect": ["~/.trae"],
+    "user": [],
+    "project": [".trae/skills"],
+    "status": "experimental",
+    "note": "仅项目级，未验证用户级路径"
+  }
+]

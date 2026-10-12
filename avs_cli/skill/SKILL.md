@@ -1,10 +1,10 @@
 ---
 name: article-to-video-shots
 slug: article-to-video-shots
-version: 1.1.0
+version: 1.2.0
 displayName: 长文转短视频分镜 · AI 视频脚本生成器
 summary: 把公众号推文、博客、测评稿一键拆成带时间轴的分镜脚本，输出画面描述、中英文视频提示词、口播配音和字幕，自动体检时长语速与渲染风险，并把每次踩过的坑沉淀下来，下次自动拦住
-description: 当用户有一篇已写好的长文（公众号推文、博客、测评稿、教程、报告、小红书长帖、技术文档），想做成短视频时触发。产出带时间轴的镜头清单，每个镜头包含画面描述、中文提示词、英文提示词、配音文案、屏幕字幕五要素，可直接投喂可灵、即梦、Sora、Veo、Runway 等文生视频模型。内置九项硬伤体检，自动检查配音字数是否超出时长、画面是否误让模型渲染中文、提示词是否遗漏统一风格前缀、单镜头是否过长。自带经验沉淀机制，每次完成的教训会累积下来变为新检查项。适用于抖音、视频号、小红书、B站、YouTube Shorts 等竖版短视频场景。触发词包括「把这个做成视频」「写视频提示词」「出分镜」「做短视频脚本」「长文转视频」「 AI 视频脚本」「口播稿」「分镜头」「storyboard」「text to video」。不用于纯图片海报生成，不用于已有时长精确的剪辑工程。
+description: 当用户有一篇已写好的长文（公众号推文、博客、测评稿、教程、报告、小红书长帖、技术文档），想做成短视频时触发。产出带时间轴的镜头清单，每个镜头包含画面描述、中文提示词、英文提示词、配音文案、屏幕字幕五要素，可直接投喂可灵、即梦、Sora、Veo、Runway 等文生视频模型。内置九项硬伤体检，自动检查配音字数是否超出时长、画面是否误让模型渲染中文、提示词是否遗漏统一风格前缀、单镜头是否过长。自带经验沉淀机制，每次完成的教训会累积下来变为新检查项。适用于抖音、视频号、小红书、B站、YouTube Shorts 等竖版短视频场景。触发词包括「把这个做成视频」「写视频提示词」「出分镜」「做短视频脚本」「长文转视频」「」「AI 视频脚本」「口播稿」「分镜头」「storyboard」「text to video」。不用于纯图片海报生成，不用于已有时长精确的剪辑工程。
 tags: [ai, video, ai-video, storyboard, content, prompting, script, text-to-video]
 license: MIT
 ---
@@ -20,7 +20,8 @@ license: MIT
 动笔之前必须先看一下过去攒下的经验，这一步不能跳：
 
 ```bash
-python3 scripts/learn.py digest
+avs learn digest
+# 没装 CLI 就跑 python3 scripts/learn.py digest
 ```
 
 输出里的每一条都要遵守。特别留意「画面禁用词」，那些是过去真实翻过车的东西。
@@ -60,10 +61,12 @@ python3 scripts/learn.py digest
 需要脚手架时先让它生成一个骨架，省去排版时间：
 
 ```bash
+avs init 文章.md --duration 60
+# 没装 CLI 就跑脚本
 python3 scripts/init_storyboard.py 文章.md --duration 60
 ```
 
-它会读文章的小标题作为候选镜头主题，按钩子短、中段平均、收尾略长的规则切好时间轴。骨架里的 TODO 必须逐个填实，不允许批量编造。
+`avs` 是随这个技能一起分发的命令行工具，装在 avs_cli 包里，`avs init` 会转发到 scripts/init_storyboard.py。它会读文章的小标题作为候选镜头主题，按钩子短、中段平均、收尾略长的规则切好时间轴。骨架里的 TODO 必须逐个填实，不允许批量编造。
 
 镜头类型不够用时查 `references/shot-patterns.md`，里面有九种常见镜头的画面公式和翻车点。
 
@@ -108,8 +111,8 @@ python3 scripts/init_storyboard.py 文章.md --duration 60
 产出后必须跑检查脚本，不凭感觉交稿：
 
 ```bash
-python3 scripts/check_storyboard.py 分镜.md
-python3 scripts/check_storyboard.py 分镜.md --strict   # 提醒也算失败
+avs check 分镜.md
+avs check 分镜.md --strict   # 提醒也算失败
 ```
 
 脚本查九项硬伤和五类提醒。硬伤必须改到清零才能交付：
@@ -144,13 +147,13 @@ E8 是这套工具自我进化的地方。经验文件里记过的禁用词会�
 
 ```bash
 # 用户明确否决过的表达
-python3 scripts/learn.py add --category 画面 --text "涉及餐饮的画面不要给食物特写" --why "客户嫌廉价"
+avs learn add --category 画面 --text "涉及餐饮的画面不要给食物特写" --why "客户嫌廉价"
 
 # 某个模型渲染失败的具体元素，会被体检自动拦截
-python3 scripts/learn.py add --avoid "沙漏" --why "该模型渲染沙漏必崩"
+avs learn add --avoid "沙漏" --why "该模型渲染沙漏必崩"
 
 # 稳定的用户偏好
-python3 scripts/learn.py add --category 用户偏好 --text "配乐偏克制，不要情绪煽动型"
+avs learn add --category 用户偏好 --text "配乐偏克制，不要情绪煽动型"
 ```
 
 `learn.py promote <id>` 把项目级经验提升为全局经验，跨项目复用。
